@@ -1,0 +1,76 @@
+; Анализ значимости факторов:***
+ZHURNAL MATRIX ,2,2,3; Результаты эксперимента заносятся в матрицу ZHURNAL (2x2x3)
+;                    по 2 уровня для факторов A и B и ещё по 3 реплики в каждом
+
+INITIAL ZHURNAL,UNSPECIFIED
+
+RMULT 411
+WORKB  EQU 16
+CARON  EQU 0
+First   EQU 1
+Second  EQU 1
+Third   EQU 1 ; (1)1 1 1
+Start 100,NP
+Clear Off
+
+RMULT 421
+Third  EQU 2 ; (2)1 1 2
+Start 100,NP
+Clear Off
+
+RMULT 521
+Third EQU 3 ; (3)1 1 3
+Start 100,NP
+Clear Off
+
+RMULT 621
+CARON EQU 10
+Second EQU 2
+Third EQU 1 ; (4)1 2 1
+Start 100,NP
+Clear Off
+
+RMULT 531
+Third EQU 2 ; (5)1 2 2
+Start 100,NP
+Clear Off
+
+RMULT 631
+Third EQU 3 ; (6)1 2 3
+Start 100,NP
+Clear Off
+
+RMULT 711
+WORKB EQU 24
+CARON EQU 0
+First EQU 2
+Second EQU 1
+Third EQU 1 ;(7)2 1 1
+Start 100,NP
+Clear Off
+
+RMULT 821
+Third EQU 2 ; (8)2 1 2
+Start 100,NP
+Clear Off
+
+RMULT 121
+Third EQU 3 ; (9)2 1 3
+Start 100,NP
+Clear Off
+
+RMULT 331
+CARON EQU 10
+Second EQU 2
+Third EQU 1 ; (10)2 2 1
+Start 100,NP
+Clear Off
+
+RMULT 231
+Third EQU 2 ; (11)2 2 2
+Start 100,NP
+Clear Off
+
+RMULT 931
+Third EQU 3 ; (12)2 2 3
+Start 100,NP

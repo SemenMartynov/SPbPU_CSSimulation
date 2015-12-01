@@ -1,0 +1,77 @@
+
+
+              GPSS World Simulation Report - PROG1.11.2
+
+
+                   Tuesday, November 17, 2015 08:05:18  
+
+   START TIME           END TIME  BLOCKS  FACILITIES  STORAGES
+        0.000          60000.000    29        0          0
+
+
+      NAME                       VALUE  
+  EMPTY                       10002.000
+  GOTOA                          28.000
+  GOTOB                          15.000
+  GOTOC                          23.000
+  LOAD                           19.000
+  PRADEC                         12.000
+  PRBDEC                         20.000
+  PRODA                       10000.000
+  PRODB                       10001.000
+  STRT                           11.000
+
+
+ LABEL          LOC  BLOCK TYPE     ENTRY COUNT CURRENT COUNT RETRY
+                1    GENERATE             1             0       0
+                2    TERMINATE            1             0       0
+                3    GENERATE          2996             0       0
+                4    SAVEVALUE         2996             0       0
+                5    TERMINATE         2996             0       0
+                6    GENERATE          3004             0       0
+                7    SAVEVALUE         3004             0       0
+                8    TERMINATE         3004             0       0
+                9    GENERATE             8             0       0
+               10    ASSIGN               8             0       0
+STRT           11    TEST              3012             0       0
+PRADEC         12    SAVEVALUE         2993             0       0
+               13    ADVANCE           2993             1       0
+               14    ASSIGN            2992             0       0
+GOTOB          15    ADVANCE           3011             1       0
+               16    TEST              3010             0       0
+               17    ADVANCE           2991             0       0
+               18    ASSIGN            2991             0       0
+LOAD           19    TEST              3010             0       0
+PRBDEC         20    SAVEVALUE         2997             0       0
+               21    ADVANCE           2997             4       0
+               22    ASSIGN            2993             0       0
+GOTOC          23    ADVANCE           3006             0       0
+               24    SAVEVALUE         3006             0       0
+               25    TEST              3006             0       0
+               26    ADVANCE           2993             1       0
+               27    ASSIGN            2992             0       0
+GOTOA          28    ADVANCE           3005             1       0
+               29    TRANSFER          3004             0       0
+
+
+SAVEVALUE           RETRY       VALUE
+PRODA                0          3.000                            
+PRODB                0          7.000                            
+EMPTY                0         32.000                            
+
+
+CEC XN   PRI      M1      ASSEM  CURRENT  NEXT  PARAMETER    VALUE
+     9    0       0.000      9     28     29       1          0.000
+
+
+FEC XN   PRI     BDT      ASSEM  CURRENT  NEXT  PARAMETER    VALUE
+  6010    0   60007.092   6010      0      6
+     4    0   60010.000      4     15     16       1          1.000
+     5    0   60010.000      5     21     22       1          0.000
+    11    0   60010.000     11     21     22       1          0.000
+     8    0   60010.000      8     21     22       1          0.000
+    10    0   60010.000     10     21     22       1          0.000
+  6011    0   60016.011   6011      0      3
+     6    0   60020.000      6     13     14       1          0.000
+     7    0   60020.000      7     26     27       1          1.000
+  6012    0  120000.000   6012      0      1

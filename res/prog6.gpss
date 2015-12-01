@@ -1,0 +1,416 @@
+***Начальные значения:***
+	WORKA EQU 20; 
+	WORKB EQU 20; 
+	CARON EQU 10;
+
+***Таймер процесса моделирования:***
+	GENERATE 60000; 1 000 часов
+	TERMINATE 1
+
+***Производство перевозимой продукции в филиале А***
+	;GENERATE 20,3; Время выпуска партии 20 +/- 3 мин.
+	GENERATE WORKA, 1; Время выпуска партии -- WORKA минут
+	SAVEVALUE ProdA+,1; число партий в ячейке ProdA
+	TERMINATE
+
+***Производство перевозимой продукции в филиале В***
+	;GENERATE 20,5; Время выпуска партии 20 +/- 5 мин.
+	GENERATE WORKB, 1; Время выпуска партии -- WORKB минут
+	SAVEVALUE ProdB+,1; число партий в ячейке ProdB
+	TERMINATE
+
+***Работа транспортного цеха***
+	;GENERATE 10,,20,8; выход 8-ми грузовиков через каждые 10 минут
+	GENERATE CARON,,20,8; выход 8-ми грузовиков через каждые CARON минут
+	ASSIGN 1,0; помечаем грузовики как пустые
+
+STRT TEST G X$ProdA,0,GOTOB; проверка наличия груза в филиале А
+PRADEC SAVEVALUE ProdA-,1; забрать груз для погрузки
+	ADVANCE 20; погрузка 20 мин
+	ASSIGN 1,1; помечаем: грузовик с грузом
+
+GOTOB ADVANCE 30; 30 мин переезд в филиал В
+	TEST G P1,0,LOAD; проверка: нужно разгружаться?
+	ADVANCE 20; разгрузка 20 мин
+	ASSIGN 1,0; помечаем: грузовик пуст
+LOAD TEST G X$ProdB,0,GOTOC; проверка наличия груза в филиале В
+PRBDEC SAVEVALUE ProdB-,1; забрать груз для погрузки
+	ADVANCE 20; погрузка 20 мин
+	ASSIGN 1,1; помечаем: грузовик с грузом
+
+GOTOC ADVANCE 30; 30 мин переезд в филиал С
+	SAVEVALUE EMPTY,(N$STRT-N$PRADEC+N$LOAD-N$PRBDEC); число пустых перегонов
+	TEST G P1,0,GOTOA; проверка: нужно разгружаться?
+	ADVANCE 20; разгрузка 20 мин
+	ASSIGN 1,0; помечаем: грузовик пуст
+
+GOTOA ADVANCE 20; 20 мин переезд в филиал А
+	TRANSFER ,STRT; начинаем новый круг
+
+
+*******************************************************
+*                                                     *
+*                       RSM                           *
+*          Response Surface Exploration               *
+*                                                     *
+*******************************************************
+RSM_RunMatrix MATRIX ,32,3
+INITIAL RSM_RunMatrix,UNSPECIFIED
+RSM_RunYields MATRIX ,32,1
+INITIAL RSM_RunYields,UNSPECIFIED
+RSM_TreatmentLevels MATRIX ,3,1
+INITIAL RSM_TreatmentLevels,UNSPECIFIED
+RSM_TreatmentHalfRange MATRIX ,3,1
+INITIAL RSM_TreatmentHalfRange,UNSPECIFIED
+RSM_MovementVector MATRIX ,3,1 
+INITIAL RSM_MovementVector,UNSPECIFIED
+RSM_BestYields MATRIX ,2,1 
+INITIAL RSM_BestYields,UNSPECIFIED
+RSM_CurrentBestTC MATRIX ,3,1 
+INITIAL RSM_CurrentBestTC,UNSPECIFIED
+RSM_OptimumTC MATRIX ,3,1 
+INITIAL RSM_OptimumTC,UNSPECIFIED
+RSM_NextRunNumber EQU	0
+RSM_RunIndex EQU	0
+
+EXPERIMENT RSM() BEGIN
+
+    TEMPORARY Moving,InitialMove,OptimumType,CurrentYield,TRUE,FALSE;
+    TEMPORARY FitCode,LackOfFit,DirectionFound,OptimumPredicted,OptimumContained;
+    /* Return codes from surface fit. */
+    TRUE=1;FALSE=0;FitCode=TRUE;InitialMove=FALSE;
+    LackOfFit=1;DirectionFound=2;OptimumPredicted=3;OptimumContained=4;
+    OptimumType = 1; /* Look for Maximum */
+    RSM_DirectionLimit = 2;
+    RSM_NextRunNumber = 1;
+
+    RSM_TreatmentLevels[1,1] = ((22)+(18))/2;
+    RSM_TreatmentHalfRange[1,1] = ((22)-(18))/2;
+    RSM_TreatmentLevels[2,1] = ((24)+(16))/2;
+    RSM_TreatmentHalfRange[2,1] = ((24)-(16))/2;
+    RSM_TreatmentLevels[3,1] = ((10)+(0))/2;
+    RSM_TreatmentHalfRange[3,1] = ((10)-(0))/2;
+    Moving = TRUE;
+
+    WHILE ((Moving'E'TRUE)'AND'(RSM_DirectionLimit>0)) DO BEGIN
+        /* Repeat for each direction */
+        /*  Set up the ascent vector. */
+        /*  Run the unaugmented factorial experiment. */
+        DoCommand("INITIAL RSM_RunYields,UNSPECIFIED");
+        RSM_FullPlusCenter();
+        /*  If we have moved, run the augmented experiment. */
+        IF (InitialMove'E'TRUE) THEN RSM_Augmented();
+        FitCode = RSM_FitSurfaceToData(RSM_RunMatrix,RSM_RunYields,RSM_TreatmentLevels,
+                                       RSM_TreatmentHalfRange,OptimumType,RSM_BestYields,
+                                       RSM_CurrentBestTC,RSM_MovementVector,RSM_OptimumTC);
+        IF (FitCode'LE'LackOfFit) THEN BEGIN
+            /*  Factorial experiment fails. Try the augmented. */
+            RSM_Augmented();
+        FitCode = RSM_FitSurfaceToData(RSM_RunMatrix,RSM_RunYields,RSM_TreatmentLevels,
+                                       RSM_TreatmentHalfRange,OptimumType,RSM_BestYields,
+                                       RSM_CurrentBestTC,RSM_MovementVector,RSM_OptimumTC);
+        END;
+        IF (FitCode'LE'LackOfFit) THEN BEGIN
+            /*  All Models Fail. RSM Fails.*/
+            DoCommand("SHOW ""ERROR: Response Surface Fails. Optimum not found."""); 
+            RETURN 0;
+        END;
+        IF (FitCode'L'OptimumContained) THEN BEGIN
+            /*  The Move Vector is in place.*/
+            RSM_Move(OptimumType);
+            InitialMove=TRUE;
+            /* Reset the Experimental Region, */
+            RSM_TreatmentLevels[1,1] = RSM_CurrentBestTC[1,1];
+            /* Don't exceed limits. */
+            IF (RSM_TreatmentLevels[1,1]'LE'((18)+1.000000)) THEN BEGIN
+                RSM_TreatmentLevels[1,1] = (18) + 1.000000;
+            END;
+            IF (RSM_TreatmentLevels[1,1]'GE'((22)-1.000000)) THEN BEGIN
+                RSM_TreatmentLevels[1,1] = (22) - 1.000000;
+            END;
+            RSM_TreatmentLevels[2,1] = RSM_CurrentBestTC[2,1];
+            IF (RSM_TreatmentLevels[2,1]'LE'((16)+1.000000)) THEN BEGIN
+                RSM_TreatmentLevels[2,1] = (16) + 1.000000;
+            END;
+            IF (RSM_TreatmentLevels[2,1]'GE'((24)-1.000000)) THEN BEGIN
+                RSM_TreatmentLevels[2,1] = (24) - 1.000000;
+            END;
+            RSM_TreatmentLevels[3,1] = RSM_CurrentBestTC[3,1];
+            IF (RSM_TreatmentLevels[3,1]'LE'((0)+1.000000)) THEN BEGIN
+                RSM_TreatmentLevels[3,1] = (0) + 1.000000;
+            END;
+            IF (RSM_TreatmentLevels[3,1]'GE'((10)-1.000000)) THEN BEGIN
+                RSM_TreatmentLevels[3,1] = (10) - 1.000000;
+            END;
+            RSM_DirectionLimit = RSM_DirectionLimit-1;
+        END;
+        ELSE Moving = FALSE;
+    END;
+
+    IF (FitCode<OptimumContained) THEN BEGIN
+        /*  Fit the augmented model. */
+        DoCommand("INITIAL RSM_RunYields,UNSPECIFIED");
+        RSM_FullPlusCenter();
+        RSM_Augmented();
+        FitCode = RSM_FitSurfaceToData(RSM_RunMatrix,RSM_RunYields,RSM_TreatmentLevels,
+                                       RSM_TreatmentHalfRange,OptimumType,RSM_BestYields,
+                                       RSM_CurrentBestTC,RSM_MovementVector,RSM_OptimumTC);
+    END;
+
+    IF (FitCode<OptimumPredicted) THEN BEGIN
+        /*  All Models Fail. RSM Fails.*/
+        DoCommand("SHOW ""ERROR: Response Surface Fails. Optimum not found."""); 
+    END;
+
+    IF (FitCode'GE'OptimumPredicted) THEN BEGIN
+        /*  Verify the Optimum.*/
+        IF ((OptimumType#RSM_BestYields[2,1])>(OptimumType#RSM_BestYields[1,1]) ) THEN BEGIN 
+            DoCommand("SHOW ""Running the predicted Optimum."""); 
+            WORKA = RSM_OptimumTC[1,1];
+            WORKB = RSM_OptimumTC[2,1];
+            CARON = RSM_OptimumTC[3,1];
+           /*  Do the Simulation */
+           CurrentYield = RSM_GetResult();
+            IF ( (OptimumType#CurrentYield)>(OptimumType#RSM_BestYields[1,1]) ) THEN BEGIN 
+                RSM_BestYields[1,1]=CurrentYield;
+                RSM_CurrentBestTC[1,1] = WORKA;
+                RSM_CurrentBestTC[2,1] = WORKB;
+                RSM_CurrentBestTC[3,1] = CARON;
+            END;
+        END;
+    END;
+
+END;
+
+
+
+*******************************************************
+*                 Move Procedure                      *
+*                                                     *
+*       OptimumType =  1 - Maximize                   *
+*                   = -1 - Minimize                   *
+*******************************************************
+
+PROCEDURE RSM_Move(OptimumType) BEGIN
+
+    /* RSM_FitSurfaceToData must return a code > 0 before moving. */
+
+    TEMPORARY CurrentYield,KeepMoving,TRUE,FALSE;
+
+    TRUE=1;FALSE=0;KeepMoving=TRUE;
+    DoCommand("INITIAL RSM_RunYields,UNSPECIFIED ");
+    DoCommand("SHOW ""Moving ..."""); 
+
+    /* Backup a half step so that the first step is a small one. */
+    WORKA = RSM_CurrentBestTC[1,1]-RSM_MovementVector[1,1]/2;
+    WORKB = RSM_CurrentBestTC[2,1]-RSM_MovementVector[2,1]/2;
+    CARON = RSM_CurrentBestTC[3,1]-RSM_MovementVector[3,1]/2;
+
+    WHILE (KeepMoving) DO BEGIN
+
+        WORKA = WORKA + RSM_MovementVector[1,1];
+        WORKB = WORKB + RSM_MovementVector[2,1];
+        CARON = CARON + RSM_MovementVector[3,1];
+            /* Don't exceed limits. */
+        IF ((WORKA)'LE'((18)+1.000000)) THEN BEGIN
+            WORKA = 18 + 1.000000;
+            KeepMoving = FALSE;
+        END;
+        IF ((WORKA)'GE'((22)-1.000000)) THEN BEGIN
+            WORKA = 22 - 1.000000;
+            KeepMoving = FALSE;
+        END;
+        IF ((WORKB)'LE'((16)+1.000000)) THEN BEGIN
+            WORKB = 16 + 1.000000;
+            KeepMoving = FALSE;
+        END;
+        IF ((WORKB)'GE'((24)-1.000000)) THEN BEGIN
+            WORKB = 24 - 1.000000;
+            KeepMoving = FALSE;
+            END;
+        IF ((CARON)'LE'((0)+1.000000)) THEN BEGIN
+            CARON = 0 + 1.000000;
+            KeepMoving = FALSE;
+        END;
+        IF ((CARON)'GE'((10)-1.000000)) THEN BEGIN
+            CARON = 10 - 1.000000;
+            KeepMoving = FALSE;
+        END;
+
+        /*  Do the Simulation */
+        RSM_RunIndex = 1; /*  Don't let the Run Index Advance */
+        CurrentYield = RSM_GetResult();
+        IF ((OptimumType#CurrentYield)>(OptimumType#RSM_BestYields[1,1]) ) THEN BEGIN 
+            RSM_BestYields[1,1]=CurrentYield;
+            RSM_CurrentBestTC[1,1] = WORKA;
+            RSM_CurrentBestTC[2,1] = WORKB;
+            RSM_CurrentBestTC[3,1] = CARON;
+        END;
+        ELSE BEGIN
+            /* We have passed the optimum. */
+            KeepMoving = FALSE; 
+        END;
+    END;
+    DoCommand("SHOW ""Move ending."""); 
+
+END;
+
+
+
+*******************************************************
+*                                                     *
+*               RSM_FullPlusCenter                    *
+*                                                     *
+*******************************************************
+
+PROCEDURE RSM_FullPlusCenter() BEGIN
+
+    /* Full Factorial Experiment Using Previous Results */
+
+    TEMPORARY CurrentYield,IndexI,IndexJ,IndexK;
+
+    RSM_RunIndex = 1;
+
+
+    IndexI=1;
+    WHILE (IndexI<3) DO BEGIN
+      IndexJ=1;
+      WHILE (IndexJ<3) DO BEGIN
+        IndexK=1;
+        WHILE (IndexK<3) DO BEGIN
+	/*********************************************/
+	IF (StringCompare(DataType(RSM_RunYields[RSM_RunIndex,1]),"UNSPECIFIED")'E'0)
+	THEN BEGIN
+	    /*  Run Procedure Call */
+	    IF (IndexI'E'1) THEN WORKA = RSM_TreatmentLevels[1,1]-RSM_TreatmentHalfRange[1,1];
+	    ELSE WORKA = RSM_TreatmentLevels[1,1]+RSM_TreatmentHalfRange[1,1];
+	    IF (IndexJ'E'1) THEN WORKB = RSM_TreatmentLevels[2,1]-RSM_TreatmentHalfRange[2,1];
+	    ELSE WORKB = RSM_TreatmentLevels[2,1]+RSM_TreatmentHalfRange[2,1];
+	    IF (IndexK'E'1) THEN CARON = RSM_TreatmentLevels[3,1]-RSM_TreatmentHalfRange[3,1];
+	    ELSE CARON = RSM_TreatmentLevels[3,1]+RSM_TreatmentHalfRange[3,1];
+	    /*  Do the Simulation */
+	    RSM_GetResult();
+	END;
+	/*********************************************/
+          IndexK = IndexK+1;
+        END;
+        IndexJ = IndexJ+1;
+      END;
+      IndexI = IndexI+1;
+    END;
+
+    /*********************************************/
+    /*         Evaluate 3 Center Points          */
+    /*********************************************/
+    RSM_CenterTheFactors();
+    IndexI=1;
+    WHILE (IndexI<4) DO BEGIN
+	IF (StringCompare(DataType(RSM_RunYields[RSM_RunIndex,1]),"UNSPECIFIED")'E'0)
+	THEN BEGIN
+            /*  Do the Simulation */
+            RSM_GetResult();
+	END;
+	IndexI = IndexI+1;
+    END;
+
+END;
+
+
+*******************************************************
+*                                                     *
+*                  RSM_Augmented                      *
+*                                                     *
+*******************************************************
+
+PROCEDURE RSM_Augmented() BEGIN
+
+    /* Augmented Experiment  */
+
+    /* Add the Augmentation Points. */
+    RSM_CenterTheFactors();
+    WORKA = RSM_TreatmentLevels[1,1] + 1.000000 # RSM_TreatmentHalfRange[1,1];
+    RSM_GetResult();
+    WORKA = RSM_TreatmentLevels[1,1] - 1.000000 # RSM_TreatmentHalfRange[1,1];
+    RSM_GetResult();
+    RSM_CenterTheFactors();
+    WORKB = RSM_TreatmentLevels[2,1] + 1.000000 # RSM_TreatmentHalfRange[2,1];
+    RSM_GetResult();
+    WORKB = RSM_TreatmentLevels[2,1] - 1.000000 # RSM_TreatmentHalfRange[2,1];
+    RSM_GetResult();
+    RSM_CenterTheFactors();
+    CARON = RSM_TreatmentLevels[3,1] + 1.000000 # RSM_TreatmentHalfRange[3,1];
+    RSM_GetResult();
+    CARON = RSM_TreatmentLevels[3,1] - 1.000000 # RSM_TreatmentHalfRange[3,1];
+    RSM_GetResult();
+
+END;
+
+
+
+*******************************************************
+*                                                     *
+*              RSM_CenterTheFactors                   *
+*                                                     *
+*******************************************************
+PROCEDURE RSM_CenterTheFactors() BEGIN
+    /* Return all Treatment Levels to the Center Point */
+    WORKA = RSM_TreatmentLevels[1,1];
+    WORKB = RSM_TreatmentLevels[2,1];
+    CARON = RSM_TreatmentLevels[3,1];
+END;
+
+
+
+*******************************************************
+*          The Run Execution Procedure                *
+*******************************************************
+
+PROCEDURE RSM_GetResult() BEGIN
+
+    /*    Run Simulation and Log Results.  */
+    /*    Treatments have already been set for this run.  */
+
+    TEMPORARY CurrentYield,ShowString,CommandString;
+
+    /*  Run Procedure Call */
+
+    SCREXEC(RSM_NextRunNumber);
+    CurrentYield = (X$EMPTY);
+    RSM_RunYields[RSM_RunIndex,1] = CurrentYield;
+    RSM_RunMatrix[RSM_RunIndex,1] = WORKA ;
+    RSM_RunMatrix[RSM_RunIndex,2] = WORKB ;
+    RSM_RunMatrix[RSM_RunIndex,3] = CARON ;
+
+    ShowString = PolyCatenate("Run ",String(RSM_NextRunNumber),". ", "" ); 
+
+    ShowString = PolyCatenate(ShowString,"  Yield=",String(CurrentYield),". "); 
+    ShowString = PolyCatenate(ShowString," WORKA=",String(WORKA), ";" ); 
+    ShowString = PolyCatenate(ShowString," WORKB=",String(WORKB), ";" ); 
+    ShowString = PolyCatenate(ShowString," CARON=",String(CARON), ";" ); 
+    CommandString = PolyCatenate("SHOW """,ShowString,"""", "" ); 
+    DoCommand(CommandString);
+    RSM_RunIndex = RSM_RunIndex + 1;
+    RSM_NextRunNumber = RSM_NextRunNumber + 1;
+    RETURN CurrentYield;
+
+END;
+
+*******************************************************
+*                Run Procedure                        *
+*******************************************************
+PROCEDURE SCREXEC(Run_Number) BEGIN
+    DoCommand("CLEAR OFF");      /* Must use OFF to preserve results. */
+
+    /* EXPAND THIS RMULT IF YOU HAVE MORE RNGs. */
+    /* All Random Number Streams must have new seeds. */
+    TEMPORARY CommandString;
+    /* Evaluate before passing to DoCommand. */
+    CommandString = Catenate("RMULT ",Run_Number#111);
+    /* DoCommand compiles the string in Global Context. */ 
+    DoCommand(CommandString); 
+
+    /* SET UP YOUR OWN RUN CONDITIONS. */
+    DoCommand("START 0,NP");   /* Get past the Startup Period. */
+    DoCommand("RESET");          /* Begin the Measurement Period. */
+    DoCommand("START 100,NP");  /* Run the Simulation. */
+END;*******************************************************

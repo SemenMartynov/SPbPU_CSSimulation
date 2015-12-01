@@ -1,0 +1,58 @@
+_______________________________Simulator Results______________________________
+Date:                        Tue Dec 01 11:57:14 MSK 2015
+
+____________________________Simulator Configuration___________________________
+Simulation Type:             Terminating
+Project Name:                SANnet
+Study Name:                  RStdy
+Random Number Generator:     Lagged Fibonacci
+Random Number Seed:          31415
+Maximum Batches:             10000
+Minimum Batches:             1000
+Data Reporting Frequency:    1000
+Display Update Frequency:    1000
+BuildType:                   Optimize
+Execution Architecture:      32-bit
+Runname:                     Results
+Output File:                 Results_output.txt
+Results File:                Results_results
+Jackknife Variance:          On
+Processors Per Experiment:   1
+Maximize Processor Usage:    true
+Processors Selected for Simulation: 
+        pc                   amd64
+
+_________________________________Experiment 1_________________________________
+Start Time:                  Tue Dec 01 11:57:07 MSK 2015
+Finish Time:                 Tue Dec 01 11:57:14 MSK 2015
+Elapsed Running Time:        6.828
+Total CPU Time:              6.187
+Batches Completed:           1000
+Experiment Name:             Experiment 1
+
+
+_________________________________Mean Results_________________________________
+Name                  Time               Mean                     Confidence Interval
+EmptyCars             10000.0           1.0040000000E00   +/-   9.1558776444E-02
+EmptyCars             20000.0           1.0040000000E00   +/-   9.1558776444E-02
+EmptyCars             30000.0           1.0040000000E00   +/-   9.1558776444E-02
+EmptyCars             40000.0           1.0040000000E00   +/-   9.1558776444E-02
+EmptyCars             50000.0           1.0040000000E00   +/-   9.1558776444E-02
+EmptyCars             60000.0           1.0040000000E00   +/-   9.1558776444E-02
+DetA                  20000.0           7.1387800000E02   +/-   1.8241459786E-01
+DetA                  40000.0           1.4282390000E03   +/-   2.4903589871E-01
+DetA                  60000.0           2.1427790000E03   +/-   2.9908755139E-01
+DetB                  20000.0           7.1386000000E02   +/-   2.2605268691E-01
+DetB                  40000.0           1.4281790000E03   +/-   3.2016852059E-01
+DetB                  60000.0           2.1428220000E03   +/-   4.0262862959E-01
+
+
+_______________________________Variance Results_______________________________
+
+
+_______________________________Interval Results_______________________________
+
+
+_____________________________Distribution Results_____________________________
+
+<END_MOBIUS_RESULTS>

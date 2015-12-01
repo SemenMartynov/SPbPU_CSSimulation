@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="ASCII"?>
+<models:Project xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:models="http://www.mobius.illinois.edu/projects" name="SANnet" author="sam" creationDate="2015-12-01T05:48:05.306+0300" lastSavedVersion="2.5.0.201410281336">
+  <atomic key="Transport">
+    <value name="Transport" type="SAN Model"/>
+  </atomic>
+  <reward key="TransportVars">
+    <value name="TransportVars" category="Reward" type="Performance Variables Model"/>
+  </reward>
+  <study key="RStdy">
+    <value name="RStdy" category="Study" type="Range Study"/>
+  </study>
+  <solver key="SimTrans">
+    <value name="SimTrans" category="Solver" type="Simulator"/>
+  </solver>
+</models:Project>

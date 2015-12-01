@@ -1,0 +1,207 @@
+***Начальные значения:***
+	WORKA EQU 20; 
+	WORKB EQU 20; 
+	CARON EQU 10;
+
+***Таймер процесса моделирования:***
+	GENERATE 60000; 1 000 часов
+	TERMINATE 1
+
+***Производство перевозимой продукции в филиале А***
+	;GENERATE 20,3; Время выпуска партии 20 +/- 3 мин.
+	GENERATE WORKA, 1; Время выпуска партии -- WORKA минут
+	SAVEVALUE ProdA+,1; число партий в ячейке ProdA
+	TERMINATE
+
+***Производство перевозимой продукции в филиале В***
+	;GENERATE 20,5; Время выпуска партии 20 +/- 5 мин.
+	GENERATE WORKB, 1; Время выпуска партии -- WORKB минут
+	SAVEVALUE ProdB+,1; число партий в ячейке ProdB
+	TERMINATE
+
+***Работа транспортного цеха***
+	;GENERATE 10,,20,8; выход 8-ми грузовиков через каждые 10 минут
+	GENERATE CARON,,20,8; выход 8-ми грузовиков через каждые CARON минут
+	ASSIGN 1,0; помечаем грузовики как пустые
+
+STRT TEST G X$ProdA,0,GOTOB; проверка наличия груза в филиале А
+PRADEC SAVEVALUE ProdA-,1; забрать груз для погрузки
+	ADVANCE 20; погрузка 20 мин
+	ASSIGN 1,1; помечаем: грузовик с грузом
+
+GOTOB ADVANCE 30; 30 мин переезд в филиал В
+	TEST G P1,0,LOAD; проверка: нужно разгружаться?
+	ADVANCE 20; разгрузка 20 мин
+	ASSIGN 1,0; помечаем: грузовик пуст
+LOAD TEST G X$ProdB,0,GOTOC; проверка наличия груза в филиале В
+PRBDEC SAVEVALUE ProdB-,1; забрать груз для погрузки
+	ADVANCE 20; погрузка 20 мин
+	ASSIGN 1,1; помечаем: грузовик с грузом
+
+GOTOC ADVANCE 30; 30 мин переезд в филиал С
+	SAVEVALUE EMPTY,(N$STRT-N$PRADEC+N$LOAD-N$PRBDEC); число пустых перегонов
+	TEST G P1,0,GOTOA; проверка: нужно разгружаться?
+	ADVANCE 20; разгрузка 20 мин
+	ASSIGN 1,0; помечаем: грузовик пуст
+
+GOTOA ADVANCE 20; 20 мин переезд в филиал А
+	TRANSFER ,STRT; начинаем новый круг
+
+
+*******************************************************
+*                                                     *
+*                      task5                          *
+*          Factorial Screening Experiment             *
+*                                                     *
+*******************************************************
+task5_Results MATRIX ,2,2,2
+INITIAL task5_Results,UNSPECIFIED
+task5_NextRunNumber EQU	0
+
+EXPERIMENT task5() BEGIN
+
+	/*  Run 1  */
+	WORKA = 18;
+	WORKB = 16;
+	CARON = 0;
+	IF (StringCompare(DataType(task5_Results[1,1,1]),"UNSPECIFIED")'E'0)
+	THEN BEGIN
+	    /*  Set the Run Number Variable at the beginning. */
+
+	    task5_NextRunNumber = 1;
+	    /*  Log the Run and Execute the Simulation */
+	    task5_GetResult();
+	    task5_Results[1,1,1] = (X$EMPTY);
+	END;
+
+	/*  Run 2  */
+	WORKA = 18;
+	WORKB = 16;
+	CARON = 10;
+	IF (StringCompare(DataType(task5_Results[1,1,2]),"UNSPECIFIED")'E'0)
+	THEN BEGIN
+	    /*  Log the Run and Execute the Simulation */
+	    task5_GetResult();
+	    task5_Results[1,1,2] = (X$EMPTY);
+	END;
+
+	/*  Run 3  */
+	WORKA = 18;
+	WORKB = 24;
+	CARON = 0;
+	IF (StringCompare(DataType(task5_Results[1,2,1]),"UNSPECIFIED")'E'0)
+	THEN BEGIN
+	    /*  Log the Run and Execute the Simulation */
+	    task5_GetResult();
+	    task5_Results[1,2,1] = (X$EMPTY);
+	END;
+
+	/*  Run 4  */
+	WORKA = 18;
+	WORKB = 24;
+	CARON = 10;
+	IF (StringCompare(DataType(task5_Results[1,2,2]),"UNSPECIFIED")'E'0)
+	THEN BEGIN
+	    /*  Log the Run and Execute the Simulation */
+	    task5_GetResult();
+	    task5_Results[1,2,2] = (X$EMPTY);
+	END;
+
+	/*  Run 5  */
+	WORKA = 22;
+	WORKB = 16;
+	CARON = 0;
+	IF (StringCompare(DataType(task5_Results[2,1,1]),"UNSPECIFIED")'E'0)
+	THEN BEGIN
+	    /*  Log the Run and Execute the Simulation */
+	    task5_GetResult();
+	    task5_Results[2,1,1] = (X$EMPTY);
+	END;
+
+	/*  Run 6  */
+	WORKA = 22;
+	WORKB = 16;
+	CARON = 10;
+	IF (StringCompare(DataType(task5_Results[2,1,2]),"UNSPECIFIED")'E'0)
+	THEN BEGIN
+	    /*  Log the Run and Execute the Simulation */
+	    task5_GetResult();
+	    task5_Results[2,1,2] = (X$EMPTY);
+	END;
+
+	/*  Run 7  */
+	WORKA = 22;
+	WORKB = 24;
+	CARON = 0;
+	IF (StringCompare(DataType(task5_Results[2,2,1]),"UNSPECIFIED")'E'0)
+	THEN BEGIN
+	    /*  Log the Run and Execute the Simulation */
+	    task5_GetResult();
+	    task5_Results[2,2,1] = (X$EMPTY);
+	END;
+
+	/*  Run 8  */
+	WORKA = 22;
+	WORKB = 24;
+	CARON = 10;
+	IF (StringCompare(DataType(task5_Results[2,2,2]),"UNSPECIFIED")'E'0)
+	THEN BEGIN
+	    /*  Log the Run and Execute the Simulation */
+	    task5_GetResult();
+	    task5_Results[2,2,2] = (X$EMPTY);
+	END;
+
+	/*  Aliased Effects in Fractional Factorial Experiment */
+	SE_Effects(task5_Results,"I");
+
+END;
+
+
+
+*******************************************************
+*          The Run Execution Procedure                *
+*******************************************************
+
+PROCEDURE task5_GetResult() BEGIN
+
+    /*    Run Simulation and Log Results.  */
+    /*    Treatments have already been set for this run.  */
+
+    TEMPORARY CurrentYield,ShowString,CommandString;
+
+    /*  Run Procedure Call */
+
+    SCREXEC(task5_NextRunNumber);
+    CurrentYield = (X$EMPTY);
+    ShowString = PolyCatenate("Run ",String(task5_NextRunNumber),". ", "" ); 
+
+    ShowString = PolyCatenate(ShowString,"  Yield=",String(CurrentYield),". "); 
+    ShowString = PolyCatenate(ShowString," WORKA=",String(WORKA), ";" ); 
+    ShowString = PolyCatenate(ShowString," WORKB=",String(WORKB), ";" ); 
+    ShowString = PolyCatenate(ShowString," CARON=",String(CARON), ";" ); 
+    CommandString = PolyCatenate("SHOW """,ShowString,"""", "" ); 
+    DoCommand(CommandString);
+    task5_NextRunNumber = task5_NextRunNumber + 1;
+    RETURN CurrentYield;
+
+END;
+
+*******************************************************
+*                Run Procedure                        *
+*******************************************************
+PROCEDURE SCREXEC(Run_Number) BEGIN
+    DoCommand("CLEAR OFF");      /* Must use OFF to preserve results. */
+
+    /* EXPAND THIS RMULT IF YOU HAVE MORE RNGs. */
+    /* All Random Number Streams must have new seeds. */
+    TEMPORARY CommandString;
+    /* Evaluate before passing to DoCommand. */
+    CommandString = Catenate("RMULT ",Run_Number#111);
+    /* DoCommand compiles the string in Global Context. */ 
+    DoCommand(CommandString); 
+
+    /* SET UP YOUR OWN RUN CONDITIONS. */
+    DoCommand("START 0,NP");   /* Get past the Startup Period. */
+    DoCommand("RESET");          /* Begin the Measurement Period. */
+    DoCommand("START 100,NP");  /* Run the Simulation. */
+END;*******************************************************

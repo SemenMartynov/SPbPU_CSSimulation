@@ -1,0 +1,206 @@
+<?xml version="1.0" encoding="ISO-8859-1"?>
+<class id="Mobius.RewardModels.pvs.PVInterface">
+	<int id="ClassVersion">1</int>
+	<class id="Mobius.BaseClasses.BaseInterfaceClass">
+		<int id="ClassVersion">3</int>
+		<string id="ModelName">TransportVars</string>
+		<class id="PVEditor">
+			<int id="ClassVersion">2</int>
+			<string id="TheInterfaceName">Transport</string>
+			<boolean id="SkipAcceptPopup">false</boolean>
+			<class id="Mobius.BaseClasses.BaseEditorClass">
+				<int id="ClassVersion">3</int>
+				<boolean id="HasPanel">false</boolean>
+				<vector id="LocalGlobalNamesList">
+				</vector>
+				<vector id="LocalGlobalTypesList">
+				</vector>
+				<boolean id="DisplayToolTips">true</boolean>
+			</class>
+		</class>
+		<class id="Mobius.RewardModels.pvs.PVInfo">
+			<int id="ClassVersion">3</int>
+			<class id="Mobius.BaseClasses.BaseInfoClass">
+				<int id="ClassVersion">2</int>
+			</class>
+			<string id="OutputDirectory">Reward\\TransportVars\\</string>
+			<string id="PVModelFileName">TransportVarsPVModel</string>
+			<string id="PVNodeFileName">TransportVarsPVNodes</string>
+			<string id="PVArchiveName">TransportVarsPV</string>
+			<vector id="IncludePath">
+				<string id="0">Atomic\\Transport\\TransportSAN.h</string>
+			</vector>
+			<vector id="HeaderFileList">
+				<string id="0">Reward\\TransportVars\\TransportVarsPVNodes.h</string>
+				<string id="1">Reward\\TransportVars\\TransportVarsPVModel.h</string>
+			</vector>
+			<vector id="CodeFileList">
+				<string id="0">Reward\\TransportVars\\TransportVarsPVNodes.cpp</string>
+				<string id="1">Reward\\TransportVars\\TransportVarsPVModel.cpp</string>
+			</vector>
+			<int id="NumVars">3</int>
+			<class id="Mobius.RewardModels.pvs.VariableInfo">
+				<int id="ClassVersion">7</int>
+				<string id="Name">EmptyCars</string>
+				<vector id="AffectingModelList">
+					<string id="0">Transport</string>
+				</vector>
+				<vector id="AffectingActionsList">
+				</vector>
+				<vector id="ImpulseFunctionsList">
+				</vector>
+				<string id="RewardFunction">return Transport-&gt;emptyCars-&gt;Mark();</string>
+				<int id="Type">0</int>
+				<int id="TimeSeriesType">2</int>
+				<double id="TimeSeriesFirst">10000.0</double>
+				<double id="TimeSeriesLast">60000.0</double>
+				<double id="TimeSeriesStep">10000.0</double>
+				<double id="TimeSeriesInterval">0.0</double>
+				<int id="NumTimePoints">6</int>
+				<vector id="StartTimes">
+					<string id="0">10000.0</string>
+					<string id="1">20000.0</string>
+					<string id="2">30000.0</string>
+					<string id="3">40000.0</string>
+					<string id="4">50000.0</string>
+					<string id="5">60000.0</string>
+				</vector>
+				<vector id="StopTimes">
+					<string id="0">10000.0</string>
+					<string id="1">20000.0</string>
+					<string id="2">30000.0</string>
+					<string id="3">40000.0</string>
+					<string id="4">50000.0</string>
+					<string id="5">60000.0</string>
+				</vector>
+				<double id="InitialTransient">0.0</double>
+				<double id="BatchSize">1.0</double>
+				<null id="InitialTransientVar"></null>
+				<null id="BatchSizeVar"></null>
+				<boolean id="EstimateMean">true</boolean>
+				<boolean id="EstimateVariance">false</boolean>
+				<boolean id="EstimateInterval">false</boolean>
+				<boolean id="IncludeLowerBoundOnIntervalEstimate">true</boolean>
+				<boolean id="IncludeUpperBoundOnIntervalEstimate">true</boolean>
+				<double id="LowerBoundOnIntervalEstimate">0.0</double>
+				<double id="UpperBoundOnIntervalEstimate">1.0</double>
+				<boolean id="EstimateDistribution">false</boolean>
+				<boolean id="EstimateOutOfRangeProbabilities">true</boolean>
+				<double id="LowerBoundOnDistributionEstimate">0.0</double>
+				<double id="UpperBoundOnDistributionEstimate">1.0</double>
+				<double id="StepSizeOnDistributionEstimate">0.1</double>
+				<int id="ConfidenceLevel">2</int>
+				<double id="ConfidenceInterval">0.1</double>
+				<boolean id="ConfidenceIntervalIsRelative">true</boolean>
+				<boolean id="RewardIsOverAllAvailableModels">true</boolean>
+				<vector id="ImpulseIsOverAllAvailableModels">
+				</vector>
+			</class>
+			<class id="Mobius.RewardModels.pvs.VariableInfo">
+				<int id="ClassVersion">7</int>
+				<string id="Name">DetA</string>
+				<vector id="AffectingModelList">
+					<string id="0">Transport</string>
+				</vector>
+				<vector id="AffectingActionsList">
+				</vector>
+				<vector id="ImpulseFunctionsList">
+				</vector>
+				<string id="RewardFunction">return Transport-&gt;DetA-&gt;Mark();</string>
+				<int id="Type">0</int>
+				<int id="TimeSeriesType">2</int>
+				<double id="TimeSeriesFirst">20000.0</double>
+				<double id="TimeSeriesLast">60000.0</double>
+				<double id="TimeSeriesStep">20000.0</double>
+				<double id="TimeSeriesInterval">0.0</double>
+				<int id="NumTimePoints">3</int>
+				<vector id="StartTimes">
+					<string id="0">20000.0</string>
+					<string id="1">40000.0</string>
+					<string id="2">60000.0</string>
+				</vector>
+				<vector id="StopTimes">
+					<string id="0">20000.0</string>
+					<string id="1">40000.0</string>
+					<string id="2">60000.0</string>
+				</vector>
+				<double id="InitialTransient">0.0</double>
+				<double id="BatchSize">1.0</double>
+				<null id="InitialTransientVar"></null>
+				<null id="BatchSizeVar"></null>
+				<boolean id="EstimateMean">true</boolean>
+				<boolean id="EstimateVariance">false</boolean>
+				<boolean id="EstimateInterval">false</boolean>
+				<boolean id="IncludeLowerBoundOnIntervalEstimate">true</boolean>
+				<boolean id="IncludeUpperBoundOnIntervalEstimate">true</boolean>
+				<double id="LowerBoundOnIntervalEstimate">0.0</double>
+				<double id="UpperBoundOnIntervalEstimate">1.0</double>
+				<boolean id="EstimateDistribution">false</boolean>
+				<boolean id="EstimateOutOfRangeProbabilities">true</boolean>
+				<double id="LowerBoundOnDistributionEstimate">0.0</double>
+				<double id="UpperBoundOnDistributionEstimate">1.0</double>
+				<double id="StepSizeOnDistributionEstimate">0.1</double>
+				<int id="ConfidenceLevel">2</int>
+				<double id="ConfidenceInterval">0.1</double>
+				<boolean id="ConfidenceIntervalIsRelative">true</boolean>
+				<boolean id="RewardIsOverAllAvailableModels">true</boolean>
+				<vector id="ImpulseIsOverAllAvailableModels">
+				</vector>
+			</class>
+			<class id="Mobius.RewardModels.pvs.VariableInfo">
+				<int id="ClassVersion">7</int>
+				<string id="Name">DetB</string>
+				<vector id="AffectingModelList">
+					<string id="0">Transport</string>
+				</vector>
+				<vector id="AffectingActionsList">
+				</vector>
+				<vector id="ImpulseFunctionsList">
+				</vector>
+				<string id="RewardFunction">return Transport-&gt;DetB-&gt;Mark();</string>
+				<int id="Type">0</int>
+				<int id="TimeSeriesType">2</int>
+				<double id="TimeSeriesFirst">20000.0</double>
+				<double id="TimeSeriesLast">60000.0</double>
+				<double id="TimeSeriesStep">20000.0</double>
+				<double id="TimeSeriesInterval">0.0</double>
+				<int id="NumTimePoints">3</int>
+				<vector id="StartTimes">
+					<string id="0">20000.0</string>
+					<string id="1">40000.0</string>
+					<string id="2">60000.0</string>
+				</vector>
+				<vector id="StopTimes">
+					<string id="0">20000.0</string>
+					<string id="1">40000.0</string>
+					<string id="2">60000.0</string>
+				</vector>
+				<double id="InitialTransient">0.0</double>
+				<double id="BatchSize">1.0</double>
+				<null id="InitialTransientVar"></null>
+				<null id="BatchSizeVar"></null>
+				<boolean id="EstimateMean">true</boolean>
+				<boolean id="EstimateVariance">false</boolean>
+				<boolean id="EstimateInterval">false</boolean>
+				<boolean id="IncludeLowerBoundOnIntervalEstimate">true</boolean>
+				<boolean id="IncludeUpperBoundOnIntervalEstimate">true</boolean>
+				<double id="LowerBoundOnIntervalEstimate">0.0</double>
+				<double id="UpperBoundOnIntervalEstimate">1.0</double>
+				<boolean id="EstimateDistribution">false</boolean>
+				<boolean id="EstimateOutOfRangeProbabilities">true</boolean>
+				<double id="LowerBoundOnDistributionEstimate">0.0</double>
+				<double id="UpperBoundOnDistributionEstimate">1.0</double>
+				<double id="StepSizeOnDistributionEstimate">0.1</double>
+				<int id="ConfidenceLevel">2</int>
+				<double id="ConfidenceInterval">0.1</double>
+				<boolean id="ConfidenceIntervalIsRelative">true</boolean>
+				<boolean id="RewardIsOverAllAvailableModels">true</boolean>
+				<vector id="ImpulseIsOverAllAvailableModels">
+				</vector>
+			</class>
+			<string id="TopModelName"></string>
+			<string id="ModelName">Transport</string>
+		</class>
+		<boolean id="Valid">true</boolean>
+	</class>
+</class>

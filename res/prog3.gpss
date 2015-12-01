@@ -1,0 +1,47 @@
+***Таймер процесса моделирования:***
+	GENERATE 60000; 1 000 часов
+	TERMINATE 1
+
+***Производство перевозимой продукции в филиале А***
+	;GENERATE 20,3; Время выпуска партии 20 +/- 3 мин.
+	GENERATE WORKA, 1; Время выпуска партии -- WORKA минут
+	SAVEVALUE ProdA+,1; число партий в ячейке ProdA
+	TERMINATE
+
+***Производство перевозимой продукции в филиале В***
+	GENERATE 20,5; Время выпуска партии 20 +/- 5 мин.
+	;GENERATE WORKB, 1; Время выпуска партии -- WORKB минут
+	SAVEVALUE ProdB+,1; число партий в ячейке ProdB
+	TERMINATE
+
+***Работа транспортного цеха***
+	GENERATE 10,,20,8; выход 8-ми грузовиков через каждые 10 минут
+	;GENERATE CARON,,20,8; выход 8-ми грузовиков через каждые CARON минут
+	ASSIGN 1,0; помечаем грузовики как пустые
+
+STRT TEST G X$ProdA,0,GOTOB; проверка наличия груза в филиале А
+PRADEC SAVEVALUE ProdA-,1; забрать груз для погрузки
+	ADVANCE 20; погрузка 20 мин
+	ASSIGN 1,1; помечаем: грузовик с грузом
+
+GOTOB ADVANCE 30; 30 мин переезд в филиал В
+	TEST G P1,0,LOAD; проверка: нужно разгружаться?
+	ADVANCE 20; разгрузка 20 мин
+	ASSIGN 1,0; помечаем: грузовик пуст
+LOAD TEST G X$ProdB,0,GOTOC; проверка наличия груза в филиале В
+PRBDEC SAVEVALUE ProdB-,1; забрать груз для погрузки
+	ADVANCE 20; погрузка 20 мин
+	ASSIGN 1,1; помечаем: грузовик с грузом
+
+GOTOC ADVANCE 30; 30 мин переезд в филиал С
+	SAVEVALUE EMPTY,(N$STRT-N$PRADEC+N$LOAD-N$PRBDEC); число пустых перегонов
+	TEST G P1,0,GOTOA; проверка: нужно разгружаться?
+	ADVANCE 20; разгрузка 20 мин
+	ASSIGN 1,0; помечаем: грузовик пуст
+
+GOTOA ADVANCE 20; 20 мин переезд в филиал А
+	TRANSFER ,STRT; начинаем новый круг
+
+***Call runtime command file***
+;	INCLUDE "anova3.txt"
+;	SHOW ANOVA(ZHURNAL,2,1)
